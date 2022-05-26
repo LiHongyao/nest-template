@@ -1,22 +1,33 @@
 /*
  * @Author: Lee
- * @Date: 2022-05-24 23:09:57
+ * @Date: 2022-05-26 19:53:47
  * @LastEditors: Lee
- * @LastEditTime: 2022-05-24 23:23:00
+ * @LastEditTime: 2022-05-26 22:02:27
  * @Description:
  */
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { UserDocument } from 'src/database/schemas/user.shema';
+import { UserDto } from './dto/register.dto';
 
 @Injectable()
 export class UserService {
-  /**
-   * 校验用户
-   * @param username
-   * @param password
-   */
-  async validatorUser(username: string, password: string) {
-    if (username !== 'admin' && password !== '123') {
-      throw new HttpException('账号或密码错误', HttpStatus.BAD_REQUEST);
+  constructor(
+    @InjectModel('USER_MODEL') private readonly userModel: Model<UserDocument>,
+  ) {}
+
+  async findUser(phone: string) {
+    return await this.userModel.findOne({ phone });
+  }
+
+  async register(dto: UserDto) {
+    const { phone } = dto;
+    const dbUser = await this.userModel.findOne({ phone });
+    if (dbUser) {
+      return { code: 1, msg: '用户已注册' };
     }
+    await this.userModel.create(dto);
+    return { code: 0, msg: 'success' };
   }
 }
