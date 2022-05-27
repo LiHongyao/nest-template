@@ -2,7 +2,7 @@
  * @Author: Lee
  * @Date: 2022-05-02 09:27:14
  * @LastEditors: Lee
- * @LastEditTime: 2022-05-24 21:55:30
+ * @LastEditTime: 2022-05-27 17:56:46
  * @Description: 自定义管道验证
  */
 import { ArgumentMetadata, BadRequestException, Injectable, PipeTransform } from '@nestjs/common';

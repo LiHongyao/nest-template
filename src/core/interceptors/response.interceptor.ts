@@ -2,13 +2,13 @@
  * @Author: Lee
  * @Date: 2022-05-24 22:07:11
  * @LastEditors: Lee
- * @LastEditTime: 2022-05-24 23:17:36
+ * @LastEditTime: 2022-05-27 16:51:14
  * @Description: 自定义响应拦截器
  */
 import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { IResponse } from '../interfaces/response.interface';
+import { IResponse } from 'src/common/interfaces/response.interface';
 
 @Injectable()
 export class ResponseInterceptor implements NestInterceptor {

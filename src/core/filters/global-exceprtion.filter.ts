@@ -2,7 +2,7 @@
  * @Author: Lee
  * @Date: 2022-05-24 20:50:57
  * @LastEditors: Lee
- * @LastEditTime: 2022-05-24 21:55:49
+ * @LastEditTime: 2022-05-27 16:50:37
  * @Description: 全局异常处理
  */
 import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus, Logger } from '@nestjs/common';
@@ -10,7 +10,6 @@ import { Response } from 'express';
 
 const logger = new Logger('all-exceprtion.filter');
 
-// -- 捕获所有异常
 @Catch()
 export class GlobalExceptionsFilter implements ExceptionFilter {
   // -- exception：当前正在处理的异常对象

@@ -2,15 +2,16 @@
  * @Author: Lee
  * @Date: 2022-05-24 19:13:10
  * @LastEditors: Lee
- * @LastEditTime: 2022-05-24 23:24:59
+ * @LastEditTime: 2022-05-27 17:44:09
  * @Description:
  */
 import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
-import { JwtModule } from '@nestjs/jwt';
-import { JWT_CONSTANT } from 'src/common/constants/common.constants';
 import { UserService } from 'src/shared/user/user.service';
+import { JWT_CONSTANT } from './constants/jwt.constant';
+import { JwtModule } from '@nestjs/jwt';
+import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Module({
   imports: [
@@ -20,7 +21,7 @@ import { UserService } from 'src/shared/user/user.service';
       signOptions: { expiresIn: '7 days' },
     }),
   ],
-  providers: [AuthService, UserService],
+  providers: [AuthService, UserService, JwtStrategy],
   controllers: [AuthController],
 })
 export class AuthModule {}

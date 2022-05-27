@@ -2,13 +2,13 @@
  * @Author: Lee
  * @Date: 2022-05-24 22:52:17
  * @LastEditors: Lee
- * @LastEditTime: 2022-05-24 23:00:36
+ * @LastEditTime: 2022-05-27 17:22:29
  * @Description:
  */
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
-import { JWT_CONSTANT } from 'src/common/constants/common.constants';
+import { JWT_CONSTANT } from '../constants/jwt.constant';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {

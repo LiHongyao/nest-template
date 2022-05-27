@@ -12,7 +12,7 @@ import { LoginDto } from './dto/login.dto';
 @Injectable()
 export class AuthService {
   constructor(private readonly userService: UserService) {}
-  async login(dto: LoginDto) {
+  async signin(dto: LoginDto) {
     const { phone, password } = dto;
     const dbUser = await this.userService.findUser(phone);
     if (dbUser) {
