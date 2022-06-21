@@ -2,7 +2,7 @@
  * @Author: Lee
  * @Date: 2022-05-24 22:28:27
  * @LastEditors: Lee
- * @LastEditTime: 2022-06-21 14:31:16
+ * @LastEditTime: 2022-06-21 15:39:22
  * @Description:
  */
 import { Injectable, Logger } from '@nestjs/common';
@@ -30,9 +30,9 @@ export class UploadService {
    * @returns
    */
   async getSignForUpyun(key: string) {
-    const bucketname = 'codings'; /** 服务名 */
-    const username = 'lee'; /** 操作员账号  */
-    const password = 'ooI91WBcm33wtk3FC1zzeQE5suluylw6'; /** 操作员密码 */
+    const bucketname = 'xxx'; /** 服务名 */
+    const username = 'xxx'; /** 操作员名字  */
+    const password = 'xxx'; /** 操作员密码 */
     const method = 'POST';
     const uri = '/' + bucketname; /** 请求路径 */
 
@@ -54,6 +54,10 @@ export class UploadService {
     return { code: 0, data: { policy, signature } };
   }
 
+  /**
+   * 获取上传签名：阿里云
+   * @returns
+   */
   async getSignForOSS() {
     // -- policy
     const date = new Date();
