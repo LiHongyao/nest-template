@@ -2,16 +2,27 @@
  * @Author: Lee
  * @Date: 2022-05-24 22:28:27
  * @LastEditors: Lee
- * @LastEditTime: 2022-05-24 22:34:40
+ * @LastEditTime: 2022-06-21 14:31:16
  * @Description:
  */
 import { Injectable, Logger } from '@nestjs/common';
 import * as crypto from 'crypto';
+import * as OSS from 'ali-oss';
+import { OSS_CONFIG } from 'src/common/constants/common.constants';
 
 const logger = new Logger('upload.service');
 
 @Injectable()
 export class UploadService {
+  private client: any;
+  constructor() {
+    this.client = new OSS({
+      accessKeyId: OSS_CONFIG.accessKeyId,
+      accessKeySecret: OSS_CONFIG.accessKeySecret,
+      bucket: OSS_CONFIG.bucket,
+    });
+  }
+
   /**
    * 获取上传签名：又拍云
    * http://v0.api.upyun.com/ + 空间名
@@ -41,5 +52,30 @@ export class UploadService {
     logger.log(`signature：${signature}`);
     logger.log(`policy：${policy}`);
     return { code: 0, data: { policy, signature } };
+  }
+
+  async getSignForOSS() {
+    // -- policy
+    const date = new Date();
+    date.setDate(date.getDate() + 1);
+    const policy = {
+      expiration: date.toISOString(), // 请求有效期
+      conditions: [
+        ['content-length-range', 0, 1048576000], // 设置上传文件的大小限制
+        // { bucket: client.options.bucket } // 限制可上传的bucket
+      ],
+    };
+    // -- 调用SDK获取签名。
+    const formData = await this.client.calculatePostSignature(policy);
+    // -- 响应数据
+    return {
+      code: 0,
+      data: {
+        policy: formData.policy,
+        signature: formData.Signature,
+        OSSAccessKeyId: formData.OSSAccessKeyId,
+        host: OSS_CONFIG.bucketHost,
+      },
+    };
   }
 }
