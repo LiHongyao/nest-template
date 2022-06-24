@@ -14,6 +14,7 @@ import { UploadModule } from './shared/upload/upload.module';
 // import { UserModule } from './shared/user/user.module';
 // import { APP_GUARD } from '@nestjs/core';
 // import { JwtAuthGuard } from './core/guards/jwt-auth.guard';
+import { TestModule } from './shared/test/test.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { UploadModule } from './shared/upload/upload.module';
     // AuthModule,
     // -- business moduless
     UploadModule,
+    TestModule,
     // UserModule,
   ],
   providers: [
