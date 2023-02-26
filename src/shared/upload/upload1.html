@@ -1,0 +1,72 @@
+<!--
+ * @Author: Lee
+ * @Date: 2023-02-19 22:36:00
+ * @LastEditors: Lee
+ * @LastEditTime: 2023-02-19 22:36:04
+ * @Description: 又拍云文件上传示例
+-->
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>又拍云文件上传示例</title>
+    <style>
+      body {
+        text-align: center;
+      }
+      img {
+        width: 300px;
+      }
+    </style>
+  </head>
+  <body>
+    <input type="file" id="file" />
+    <p><img id="results" /></p>
+    <script>
+      // -- 获取元素
+      var inputFile = document.querySelector('#file');
+      var img = document.querySelector('#results');
+      // -- 监听文件变化
+      inputFile.addEventListener('change', upload, false);
+      // -- 上传
+      function upload(e) {
+        // -- 获取文件
+        const file = e.currentTarget.files[0];
+        // -- 构造文件路径
+        const suffix = file.name.split('.')[1];
+        const key = `/test/K${new Date().getTime()}.${suffix}`;
+        // -- 调用后端接口/获取签名
+        fetch('http://localhost:8888/api/upload/getSignForUpyun', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ key }),
+        })
+          .then((response) => response.json())
+          .then(({ data: { signature, policy }, code }) => {
+            if (code === 0) {
+              // -- 执行上传
+              const formData = new FormData();
+              formData.append('file', file);
+              formData.append('policy', policy);
+              formData.append('authorization', signature);
+              // -- http://v0.api.upyun.com/<bucket:服务名>
+              const uploadUrl = 'http://v0.api.upyun.com/codings';
+              // -- 执行上传
+              fetch(uploadUrl, { method: 'POST', body: formData })
+                .then((response) => response.json())
+                .then(({ url }) => {
+                  const uri = 'http://codings.test.upcdn.net' + url;
+                  console.log(uri);
+                  img.setAttribute('src', uri);
+                })
+                .catch((error) => {
+                  console.log(error);
+                });
+            }
+          });
+      }
+    </script>
+  </body>
+</html>

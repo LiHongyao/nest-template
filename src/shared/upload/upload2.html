@@ -1,0 +1,75 @@
+<!--
+ * @Author: Lee
+ * @Date: 2023-02-19 22:36:17
+ * @LastEditors: Lee
+ * @LastEditTime: 2023-02-21 15:16:31
+ * @Description: 阿里云文件上传示例
+-->
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>阿里云文件上传示例</title>
+    <style>
+      body {
+        text-align: center;
+      }
+      img {
+        width: 300px;
+      }
+    </style>
+  </head>
+  <body>
+    <input type="file" id="file" />
+    <p><img id="results" /></p>
+
+    <!-- 导入SDK文件 -->
+    <script type="text/javascript" src="https://gosspublic.alicdn.com/aliyun-oss-sdk-6.16.0.min.js"></script>
+    <script>
+      // -- 获取元素
+      var inputFile = document.querySelector('#file');
+      var img = document.querySelector('#results');
+      // -- 监听文件变化
+      inputFile.addEventListener('change', upload, false);
+      // -- 上传
+      function upload(e) {
+        // -- 获取文件
+        const file = e.currentTarget.files[0];
+        // -- 构造文件路径
+        const suffix = file.name.split('.')[1];
+        // -- 注意：OSS Key 不要以/开头
+        const key = `test/K${new Date().getTime()}.${suffix}`;
+        // -- 调用后端接口/获取签名
+        fetch('http://localhost:3000/api/upload/getSignForOSS', {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' },
+        })
+          .then((response) => response.json())
+          .then(({ data: { accessKeyId, host, policy, signature }, code }) => {
+            if (code === 200) {
+              // -- 执行上传
+              const formData = new FormData();
+              formData.append('key', key); // 存储在oss的文件路径
+              formData.append('OSSAccessKeyId', accessKeyId); // accessKeyId
+              formData.append('policy', policy); // policy
+              formData.append('Signature', signature);
+              formData.append('success_action_status', '200');
+              formData.append('file', file);
+              // -- 执行上传
+              fetch(host, { method: 'POST', body: formData })
+                .then((response) => {
+                  const uri = host + '/' + key;
+                  console.log(uri);
+                  img.setAttribute('src', uri);
+                })
+                .catch((error) => {
+                  console.log(error);
+                });
+            }
+          });
+      }
+    </script>
+  </body>
+</html>
