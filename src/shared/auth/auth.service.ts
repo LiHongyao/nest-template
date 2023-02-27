@@ -2,23 +2,25 @@
  * @Author: Lee
  * @Date: 2023-02-19 17:08:54
  * @LastEditors: Lee
- * @LastEditTime: 2023-02-26 00:03:42
+ * @LastEditTime: 2023-02-27 19:54:02
  * @Description:
  */
 import { HttpService } from '@nestjs/axios';
 import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Model } from 'mongoose';
 import { BaseResponse } from 'src/common/dto/res.dto';
-import { UserDocument } from 'src/database/mongose/schemas/user.schema';
 import { lastValueFrom, map } from 'rxjs';
-import * as dayjs from 'dayjs';
 import { JwtService } from '@nestjs/jwt';
-import { AdministratorDocument } from 'src/database/mongose/schemas/administrator.schema';
 import { JWTPayloadProps } from './jwt.strategy';
 import { ConfigService } from '@nestjs/config';
-import { LoginForAdminDto } from './dto/login.request.dto';
+import { LoginForAdminDto } from './dto/req.dto';
 import { encript } from 'src/utils';
+import {
+  AdministratorDocument,
+  UserDocument,
+} from 'src/database/mongose/schemas';
+import * as dayjs from 'dayjs';
 
 const logger = new Logger('auth.service');
 
@@ -85,6 +87,10 @@ export class AuthService {
           access: [],
           user: { nickname: dbUser.nickname, avatar: dbUser.avatar },
         };
+        // -- 更新最后登录时间
+        await this.adminModel.findByIdAndUpdate(dbUser._id, {
+          lastLoginTime: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+        });
         return { data };
       }
       return { code: HttpStatus.BAD_REQUEST, msg: '密码错误！' };

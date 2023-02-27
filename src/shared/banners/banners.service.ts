@@ -2,23 +2,15 @@
  * @Author: Lee
  * @Date: 2023-02-19 14:33:58
  * @LastEditors: Lee
- * @LastEditTime: 2023-02-26 21:07:45
- * @Description:
- */
-/*
- * @Author: Lee
- * @Date: 2023-02-19 14:33:58
- * @LastEditors: Lee
- * @LastEditTime: 2023-02-21 17:54:20
+ * @LastEditTime: 2023-02-27 19:54:20
  * @Description:
  */
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-
 import { Model } from 'mongoose';
 import { BaseResponse } from 'src/common/dto/res.dto';
-import { BannerDocument } from 'src/database/mongose/schemas/banner.schema';
-import { BannerAddOrUpdateDto, GetBannersDto } from './dto';
+import { BannerDocument } from 'src/database/mongose/schemas';
+import { BannerAddOrUpdateDto, BannerListDto } from './dto/req.dto';
 
 @Injectable()
 export class BannersService {
@@ -67,9 +59,10 @@ export class BannersService {
           endDate: { $gt: new Date() } /** 结束时间大于当前时间 */,
         },
       },
-      {
-        $project: { _id: 0, startDate: 0, endDate: 0 },
-      },
+      // 4. 根据权重降序排序
+      { $sort: { weight: -1 } },
+      // 5. 格式化输出
+      { $project: { _id: 0, startDate: 0, endDate: 0 } },
     ]);
     return { data: results ?? [] };
   }
@@ -79,7 +72,7 @@ export class BannersService {
    * @param dto
    * @returns
    */
-  async listForAdmin(dto: GetBannersDto): Promise<BaseResponse> {
+  async listForAdmin(dto: BannerListDto): Promise<BaseResponse> {
     // 1. 解构参数
     const { pageSize = 10, current = 1, state } = dto;
     // 2. 计算跳过的条数
@@ -124,7 +117,7 @@ export class BannersService {
    */
   async switchStatus(id: string) {
     const banner = await this.bannerModel.findById<BannerDocument>(id);
-    const state = banner.state === 0 ? 1 : 0;
+    const state = banner.state ? 0 : 1;
     await this.bannerModel.findByIdAndUpdate(id, { state });
     return {};
   }

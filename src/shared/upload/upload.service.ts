@@ -2,7 +2,7 @@
  * @Author: Lee
  * @Date: 2023-02-19 22:35:23
  * @LastEditors: Lee
- * @LastEditTime: 2023-02-22 18:40:23
+ * @LastEditTime: 2023-02-27 19:45:50
  * @Description:
  */
 import { Injectable, Logger } from '@nestjs/common';
@@ -17,11 +17,12 @@ export class UploadService {
   private client: any;
 
   constructor() {
-    this.client = new OSS({
-      accessKeyId: OSS_CONFIG.accessKeyId,
-      accessKeySecret: OSS_CONFIG.accessKeySecret,
-      bucket: OSS_CONFIG.bucket,
-    });
+    // -- 使用时打开注释
+    // this.client = new OSS({
+    //   accessKeyId: OSS_CONFIG.accessKeyId,
+    //   accessKeySecret: OSS_CONFIG.accessKeySecret,
+    //   bucket: OSS_CONFIG.bucket,
+    // });
   }
 
   /**
@@ -48,7 +49,11 @@ export class UploadService {
     // -- 生成 signature
     const joinString = [method, uri, policy].join('&');
     const md5String = crypto.createHash('md5').update(password).digest('hex');
-    const auth = crypto.createHmac('sha1', md5String).update(joinString, 'utf8').digest().toString('base64');
+    const auth = crypto
+      .createHmac('sha1', md5String)
+      .update(joinString, 'utf8')
+      .digest()
+      .toString('base64');
     const signature = `UPYUN ${username}:${auth}`;
     logger.log(`signature：${signature}`);
     logger.log(`policy：${policy}`);

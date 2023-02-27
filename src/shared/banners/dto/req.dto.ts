@@ -2,7 +2,7 @@
  * @Author: Lee
  * @Date: 2023-02-21 15:48:13
  * @LastEditors: Lee
- * @LastEditTime: 2023-02-24 16:42:30
+ * @LastEditTime: 2023-02-27 10:05:31
  * @Description:
  */
 import { ApiProperty } from '@nestjs/swagger';
@@ -36,7 +36,7 @@ export class BannerAddOrUpdateDto {
 /**
  * 查询列表
  */
-export class GetBannersDto extends ListPageDto {
+export class BannerListDto extends ListPageDto {
   @ApiProperty({ description: '启用状态，0-已禁用，1-已启用' })
   state?: number;
 }

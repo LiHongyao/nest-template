@@ -2,13 +2,12 @@
  * @Author: Lee
  * @Date: 2023-02-26 11:39:55
  * @LastEditors: Lee
- * @LastEditTime: 2023-02-26 21:13:48
+ * @LastEditTime: 2023-02-27 19:18:17
  * @Description:
  */
 
 import { Document } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import * as dayjs from 'dayjs';
 
 @Schema({ versionKey: false, collection: 'roles', autoIndex: true })
 export class Role {
@@ -25,11 +24,7 @@ export class Role {
   createBy: string;
 
   // -- 创建时间
-  @Prop({
-    type: String,
-    required: false,
-    default: dayjs().format('YYYY-MM-DD HH:mm:ss'),
-  })
+  @Prop({ type: String, required: true })
   createDate: string;
 
   // -- 更新人
@@ -37,12 +32,12 @@ export class Role {
   updateBy: string;
 
   // -- 更新时间
-  @Prop({
-    type: String,
-    required: false,
-    default: dayjs().format('YYYY-MM-DD HH:mm:ss'),
-  })
+  @Prop({ type: String, required: true })
   updateDate: string;
+
+  // -- 角色状态
+  @Prop({ type: Number, required: false, default: 1 })
+  state: number;
 }
 
 export type RoleDocument = Role & Document;

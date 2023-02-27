@@ -2,13 +2,12 @@
  * @Author: Lee
  * @Date: 2023-02-21 14:05:52
  * @LastEditors: Lee
- * @LastEditTime: 2023-02-26 21:55:35
+ * @LastEditTime: 2023-02-27 16:08:38
  * @Description:
  */
 
 import { Document } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import * as dayjs from 'dayjs';
 
 @Schema({ versionKey: false, collection: 'administrators', autoIndex: true })
 export class Administrator {
@@ -41,11 +40,7 @@ export class Administrator {
   createBy: string;
 
   // -- 创建时间
-  @Prop({
-    type: String,
-    required: false,
-    default: dayjs().format('YYYY-MM-DD HH:mm:ss'),
-  })
+  @Prop({ type: String, required: false, default: '' })
   createDate: string;
 
   // -- 最后登录时间

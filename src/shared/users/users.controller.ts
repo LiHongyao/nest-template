@@ -9,7 +9,7 @@ import { Body, Controller, Get, Post, Req } from '@nestjs/common';
 import { ApiHeader, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Public } from 'src/core/decorators/public.decorator';
 import { JWTPayloadProps } from '../auth/jwt.strategy';
-import { GetUserListDto } from './dto';
+import { UserListDto } from './dto/req.dto';
 import { UsersService } from './users.service';
 
 @ApiTags('用户相关')
@@ -31,7 +31,7 @@ export class UsersController {
   @Public()
   @ApiOperation({ summary: '用户列表' })
   @Post('list')
-  async list(@Body() dto: GetUserListDto) {
+  async list(@Body() dto: UserListDto) {
     return await this.usersService.list(dto);
   }
 }

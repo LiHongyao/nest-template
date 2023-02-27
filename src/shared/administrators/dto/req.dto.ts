@@ -2,7 +2,7 @@
  * @Author: Lee
  * @Date: 2023-02-26 21:53:46
  * @LastEditors: Lee
- * @LastEditTime: 2023-02-26 22:37:08
+ * @LastEditTime: 2023-02-27 16:16:44
  * @Description:
  */
 import { ApiProperty } from '@nestjs/swagger';
@@ -34,10 +34,6 @@ export class AdminAddOrUpdateDto {
 }
 
 export class ChangePswDto {
-  @ApiProperty({ description: '用户ID', default: '' })
-  @IsNotEmpty({ message: '用户ID不能为空' })
-  id: string;
-
   @ApiProperty({ description: '原始密码', default: '' })
   @IsNotEmpty({ message: '原始密码不能为空' })
   oldPassword: string;

@@ -2,7 +2,7 @@
  * @Author: Lee
  * @Date: 2023-02-19 14:32:52
  * @LastEditors: Lee
- * @LastEditTime: 2023-02-24 18:20:27
+ * @LastEditTime: 2023-02-27 19:55:45
  * @Description:
  */
 
@@ -10,8 +10,8 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { BaseResponse } from 'src/common/dto/res.dto';
-import { UserDocument } from 'src/database/mongose/schemas/user.schema';
-import { GetUserListDto } from './dto';
+import { UserDocument } from 'src/database/mongose/schemas';
+import { UserListDto } from './dto/req.dto';
 
 @Injectable()
 export class UsersService {
@@ -37,7 +37,7 @@ export class UsersService {
    * 管理端·小程序用户列表
    */
 
-  async list(dto: GetUserListDto): Promise<BaseResponse> {
+  async list(dto: UserListDto): Promise<BaseResponse> {
     // 1. 解构参数
     const { pageSize = 10, current = 1, phone = '' } = dto;
     // 2. 计算跳过的条数
@@ -54,52 +54,34 @@ export class UsersService {
       { $sort: { createDate: -1 } },
       { $skip: skipNum },
       { $limit: pageSize },
-      // -- 统计装修预约数量
+      // -- 统计订单数量
       {
         $lookup: {
-          from: 'decoration-records',
+          from: 'orders',
           localField: '_id',
           foreignField: 'userId',
-          as: 'decorationRecords',
+          as: 'orders',
           pipeline: [
-            /** 根据用户id分组，统计条数 */
-            {
-              $group: { _id: '$userId', decorationRecordsNums: { $count: {} } },
-            },
-            { $project: { _id: 0 } },
-          ],
-        },
-      },
-      { $unwind: '$decorationRecords' },
-      // -- 统计家政预约数量
-      {
-        $lookup: {
-          from: 'housekepping-records',
-          localField: '_id',
-          foreignField: 'userId',
-          as: 'housekeppingRecords',
-          pipeline: [
-            /** 根据用户id分组，统计条数 */
             {
               $group: {
                 _id: '$userId',
-                housekeppingRecordsNums: { $count: {} },
+                totalPayment: { $sum: '$payAmount' },
+                totalCount: { $count: {} },
               },
             },
             { $project: { _id: 0 } },
           ],
         },
       },
-      { $unwind: '$housekeppingRecords' },
+      { $unwind: '$orders' },
       {
         $addFields: {
           id: '$_id',
-          decorationRecordsNums: '$decorationRecords.decorationRecordsNums',
-          housekeppingRecordsNums:
-            '$housekeppingRecords.housekeppingRecordsNums',
+          totalPayment: '$orders.totalPayment',
+          totalCount: '$orders.totalCount',
         },
       },
-      { $project: { _id: 0, decorationRecords: 0, housekeppingRecords: 0 } },
+      { $project: { _id: 0, orders: 0 } },
     ]);
     return {
       data: results,

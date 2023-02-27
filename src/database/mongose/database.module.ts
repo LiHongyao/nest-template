@@ -2,7 +2,7 @@
  * @Author: Lee
  * @Date: 2023-02-19 18:32:48
  * @LastEditors: Lee
- * @LastEditTime: 2023-02-26 11:56:00
+ * @LastEditTime: 2023-02-27 19:41:57
  * @Description:
  */
 /*
@@ -15,12 +15,16 @@
 import { Global, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AccessSchema } from './schemas/access.schema';
-import { AdministratorSchema } from './schemas/administrator.schema';
-import { BannerSchema } from './schemas/banner.schema';
-import { ConfigsSchema } from './schemas/configs.schema';
-import { RoleSchema } from './schemas/role.schema';
-import { UserSchema } from './schemas/user.schema';
+import {
+  AccessSchema,
+  AddressSchema,
+  AdministratorSchema,
+  BannerSchema,
+  ConfigsSchema,
+  FeedbackSchema,
+  RoleSchema,
+  UserSchema,
+} from './schemas';
 
 // -- 此模块使用 forFeature() 方法定义在当前范围中注册哪些存储库。
 // -- 如果有多张表，直接在数组中加配置就可以了
@@ -29,8 +33,11 @@ const MONGO_MODELS = MongooseModule.forFeature([
   { name: 'USER_MODEL', schema: UserSchema },
   { name: 'BANNER_MODEL', schema: BannerSchema },
   { name: 'ADMINISTRATOR_MODEL', schema: AdministratorSchema },
+  { name: 'CONFIGS_MODEL', schema: ConfigsSchema },
   { name: 'ACCESS_MODEL', schema: AccessSchema },
   { name: 'ROLE_MODEL', schema: RoleSchema },
+  { name: 'FEEDBACK_MODEL', schema: FeedbackSchema },
+  { name: 'ADDRESS_MODEL', schema: AddressSchema },
 ]);
 
 @Global()

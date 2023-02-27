@@ -2,10 +2,9 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { BaseResponse } from 'src/common/dto/res.dto';
-import { AccessDocument } from 'src/database/mongose/schemas/access.schema';
-import { RoleDocument } from 'src/database/mongose/schemas/role.schema';
 import { findPathByLeafId, fomartToTree, lookForAllIds } from 'src/utils';
 import { AccessAddOrUpdateDto, RoleAddOrUpdateDto } from './dto/req.dto';
+import { AccessDocument, RoleDocument } from 'src/database/mongose/schemas';
 import * as dayjs from 'dayjs';
 
 @Injectable()

@@ -2,14 +2,14 @@
  * @Author: Lee
  * @Date: 2023-02-19 17:08:38
  * @LastEditors: Lee
- * @LastEditTime: 2023-02-24 16:24:06
+ * @LastEditTime: 2023-02-27 09:46:46
  * @Description:
  */
 import { Body, Controller, Logger, Post } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Public } from 'src/core/decorators/public.decorator';
 import { AuthService } from './auth.service';
-import { LoginForMPDto, LoginForAdminDto } from './dto/login.request.dto';
+import { LoginForMPDto, LoginForAdminDto } from './dto/req.dto';
 
 const logger = new Logger('auth.controller');
 

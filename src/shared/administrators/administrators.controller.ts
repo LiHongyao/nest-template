@@ -2,16 +2,17 @@
  * @Author: Lee
  * @Date: 2023-02-26 00:42:17
  * @LastEditors: Lee
- * @LastEditTime: 2023-02-26 22:40:55
+ * @LastEditTime: 2023-02-27 16:23:17
  * @Description:
  */
-import { Body, Controller, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Param, Post, Put, Req } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { Public } from 'src/core/decorators/public.decorator';
+import { JWTPayloadProps } from '../auth/jwt.strategy';
 import { AdministratorsService } from './administrators.service';
 import { AdminAddOrUpdateDto, AdminListDto, ChangePswDto } from './dto/req.dto';
 
-@ApiTags('管理员相关')
+@ApiTags('管理员')
 @Controller('administrators')
 export class AdministratorsController {
   constructor(private readonly administratorsService: AdministratorsService) {}
@@ -31,11 +32,13 @@ export class AdministratorsController {
     return await this.administratorsService.resetPsw(id);
   }
 
-  @Public()
   @ApiOperation({ summary: '修改密码' })
   @Put('/change-psw')
-  async changePsw(@Body() dto: ChangePswDto) {
-    return await this.administratorsService.changePsw(dto);
+  async changePsw(
+    @Body() dto: ChangePswDto,
+    @Req() req: Request & { user: JWTPayloadProps },
+  ) {
+    return await this.administratorsService.changePsw(dto, req.user.sub);
   }
 
   @Public()

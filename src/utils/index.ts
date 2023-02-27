@@ -2,7 +2,7 @@
  * @Author: Lee
  * @Date: 2023-02-19 22:44:45
  * @LastEditors: Lee
- * @LastEditTime: 2023-02-26 23:04:07
+ * @LastEditTime: 2023-02-27 19:35:18
  * @Description:
  */
 import * as crypto from 'crypto';
@@ -29,8 +29,6 @@ export function encript(password: string, salt: string) {
 
 /**
  * 将展开数组根据parentId组合嵌套
- * 主要用于树形结构的数据处理
- * 因为存储在数据库是以单条记录的形式存储的，返回给前端时需要组合嵌套
  * @param list
  * @returns
  */
@@ -52,10 +50,9 @@ export function fomartToTree(list: Array<any>) {
 
 /**
  * 根据ID查找树节点
- * 主要用于树形结构的数据处理
- * @param leafId 需要查找的id值
- * @param nodes 查找源
- * @param path 递归时使用
+ * @param leafId
+ * @param nodes
+ * @param path
  * @returns
  */
 export function findPathByLeafId(
@@ -82,12 +79,12 @@ export function findPathByLeafId(
 }
 
 /**
- * 查找节点极其所有子节点的id集合
+ * 查找当前节点及其字节的ID集合
  * @param data 
  * @param arr 
  * @returns 
  */
-export function lookForAllIds(data: Array<any>, arr = []) {
+export const lookForAllIds = (data = [], arr = []) => {
   for (const item of data) {
     arr.push(item.id);
     if (item.children && item.children.length)
