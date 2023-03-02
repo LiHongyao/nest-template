@@ -2,7 +2,7 @@
  * @Author: Lee
  * @Date: 2023-02-27 14:02:14
  * @LastEditors: Lee
- * @LastEditTime: 2023-02-27 15:34:09
+ * @LastEditTime: 2023-03-02 17:28:17
  * @Description:
  */
 import {
@@ -45,7 +45,6 @@ export class AddressController {
     return await this.addressService.list(platform, req.user.sub);
   }
 
-  @Public()
   @ApiOperation({ summary: '移除地址' })
   @ApiParam({ name: 'id', description: '地址ID' })
   @Delete('remove/:id')

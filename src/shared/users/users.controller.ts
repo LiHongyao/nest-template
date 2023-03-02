@@ -2,7 +2,7 @@
  * @Author: Lee
  * @Date: 2023-02-19 14:32:29
  * @LastEditors: Lee
- * @LastEditTime: 2023-02-26 22:44:02
+ * @LastEditTime: 2023-03-02 17:38:24
  * @Description:
  */
 import { Body, Controller, Get, Post, Req } from '@nestjs/common';
@@ -17,7 +17,7 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @ApiOperation({ summary: '用户信息' })
+  @ApiOperation({ summary: '小程序：用户信息' })
   @ApiHeader({
     name: 'Authorization',
     required: true,
@@ -29,7 +29,7 @@ export class UsersController {
   }
 
   @Public()
-  @ApiOperation({ summary: '用户列表' })
+  @ApiOperation({ summary: '管理端：用户列表' })
   @Post('list')
   async list(@Body() dto: UserListDto) {
     return await this.usersService.list(dto);

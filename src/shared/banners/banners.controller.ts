@@ -2,11 +2,12 @@
  * @Author: Lee
  * @Date: 2023-02-19 14:33:52
  * @LastEditors: Lee
- * @LastEditTime: 2023-02-27 10:05:16
+ * @LastEditTime: 2023-03-02 17:32:10
  * @Description:
  */
 import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
+import { Public } from 'src/core/decorators/public.decorator';
 import { BannersService } from './banners.service';
 import { BannerAddOrUpdateDto, BannerListDto } from './dto/req.dto';
 
@@ -15,6 +16,7 @@ import { BannerAddOrUpdateDto, BannerListDto } from './dto/req.dto';
 export class BannersController {
   constructor(private readonly bannersService: BannersService) {}
 
+  @Public()
   @ApiOperation({ summary: '添加或编辑轮播图' })
   @Post('addOrUpdate')
   async addOrUpdate(@Body() dto: BannerAddOrUpdateDto) {

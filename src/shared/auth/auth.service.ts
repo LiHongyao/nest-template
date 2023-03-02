@@ -2,7 +2,7 @@
  * @Author: Lee
  * @Date: 2023-02-19 17:08:54
  * @LastEditors: Lee
- * @LastEditTime: 2023-02-27 19:54:02
+ * @LastEditTime: 2023-03-02 17:10:32
  * @Description:
  */
 import { HttpService } from '@nestjs/axios';
@@ -17,7 +17,9 @@ import { ConfigService } from '@nestjs/config';
 import { LoginForAdminDto } from './dto/req.dto';
 import { encript } from 'src/utils';
 import {
+  AccessDocument,
   AdministratorDocument,
+  RoleDocument,
   UserDocument,
 } from 'src/database/mongose/schemas';
 import * as dayjs from 'dayjs';
@@ -27,9 +29,18 @@ const logger = new Logger('auth.service');
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectModel('USER_MODEL') private readonly userModel: Model<UserDocument>,
+    @InjectModel('USER_MODEL')
+    private readonly userModel: Model<UserDocument>,
+
     @InjectModel('ADMINISTRATOR_MODEL')
     private readonly adminModel: Model<AdministratorDocument>,
+
+    @InjectModel('ROLE_MODEL')
+    private readonly roleModel: Model<RoleDocument>,
+
+    @InjectModel('ACCESS_MODEL')
+    private readonly accessModel: Model<AccessDocument>,
+
     private readonly jwtService: JwtService,
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
@@ -72,31 +83,48 @@ export class AuthService {
   }
 
   /**
-   *
+   * 管理员登录
+   * @param dto
+   * @returns
    */
   async loginForAdmin(dto: LoginForAdminDto): Promise<BaseResponse> {
     const { username, password } = dto;
-    // → 判断用户是否存在
-    const dbUser = await this.adminModel.findOne({ username });
+    const dbUser = await this.adminModel.findOne<AdministratorDocument>({
+      username,
+    });
+
     if (dbUser) {
       const psw = encript(password, dbUser.salt);
       if (username == dbUser.username && psw == dbUser.password) {
+        // -- 登录成功
+        // 1. 生成JWT_Token
         const token = await this.createToken({ sub: dbUser._id.toString() });
-        const data = {
-          token,
-          access: [],
-          user: { nickname: dbUser.nickname, avatar: dbUser.avatar },
-        };
-        // -- 更新最后登录时间
+        // 2. 查找用户权限
+        let access: Array<string> = [];
+        if (dbUser.roleId) {
+          const role = await this.roleModel.findById<RoleDocument>(
+            dbUser.roleId,
+          );
+          const objs = await this.accessModel.find({
+            _id: { $in: role.authIds },
+          });
+          access = objs.map((item) => item.code);
+        }
+        // 3. 更新最后登录时间
         await this.adminModel.findByIdAndUpdate(dbUser._id, {
           lastLoginTime: dayjs().format('YYYY-MM-DD HH:mm:ss'),
         });
+        // 4. 组装数据返回给前端
+        const data = {
+          token,
+          access,
+          user: { nickname: dbUser.nickname, avatar: dbUser.avatar },
+        };
         return { data };
       }
-      return { code: HttpStatus.BAD_REQUEST, msg: '密码错误！' };
+      return { code: HttpStatus.BAD_REQUEST, msg: '密码错误' };
     }
-    // → 用户不存在
-    return { code: HttpStatus.BAD_REQUEST, msg: '用户不存在！' };
+    return { code: HttpStatus.BAD_REQUEST, msg: '用户不存在' };
   }
 
   /**

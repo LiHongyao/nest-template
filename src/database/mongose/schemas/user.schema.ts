@@ -2,7 +2,7 @@
  * @Author: Lee
  * @Date: 2023-02-19 18:33:24
  * @LastEditors: Lee
- * @LastEditTime: 2023-02-27 16:07:25
+ * @LastEditTime: 2023-03-02 17:37:17
  * @Description:
  */
 
@@ -11,19 +11,19 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 @Schema({ versionKey: false, collection: 'users', autoIndex: false })
 export class User {
-  @Prop({ type: String, unique: true, required: true, index: true })
+  @Prop({ unique: true, required: true, index: true })
   _id: string;
 
-  @Prop({ type: String, default: '' })
+  @Prop({ default: '' })
   createDate: string;
 
-  @Prop({ type: String, default: '' })
+  @Prop({ default: '' })
   nickname: string;
 
-  @Prop({ type: String, default: '' })
+  @Prop({ default: '' })
   avatarUrl: string;
 
-  @Prop({ type: String, default: '' })
+  @Prop({ default: '' })
   phone: string;
 }
 

@@ -2,7 +2,7 @@
  * @Author: Lee
  * @Date: 2023-02-19 14:32:52
  * @LastEditors: Lee
- * @LastEditTime: 2023-02-27 19:55:45
+ * @LastEditTime: 2023-03-02 17:39:25
  * @Description:
  */
 
@@ -54,34 +54,7 @@ export class UsersService {
       { $sort: { createDate: -1 } },
       { $skip: skipNum },
       { $limit: pageSize },
-      // -- 统计订单数量
-      {
-        $lookup: {
-          from: 'orders',
-          localField: '_id',
-          foreignField: 'userId',
-          as: 'orders',
-          pipeline: [
-            {
-              $group: {
-                _id: '$userId',
-                totalPayment: { $sum: '$payAmount' },
-                totalCount: { $count: {} },
-              },
-            },
-            { $project: { _id: 0 } },
-          ],
-        },
-      },
-      { $unwind: '$orders' },
-      {
-        $addFields: {
-          id: '$_id',
-          totalPayment: '$orders.totalPayment',
-          totalCount: '$orders.totalCount',
-        },
-      },
-      { $project: { _id: 0, orders: 0 } },
+      { $project: { _id: 0 } },
     ]);
     return {
       data: results,

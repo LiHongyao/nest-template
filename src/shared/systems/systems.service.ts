@@ -4,7 +4,11 @@ import { Model } from 'mongoose';
 import { BaseResponse } from 'src/common/dto/res.dto';
 import { findPathByLeafId, fomartToTree, lookForAllIds } from 'src/utils';
 import { AccessAddOrUpdateDto, RoleAddOrUpdateDto } from './dto/req.dto';
-import { AccessDocument, RoleDocument } from 'src/database/mongose/schemas';
+import {
+  AccessDocument,
+  AdministratorDocument,
+  RoleDocument,
+} from 'src/database/mongose/schemas';
 import * as dayjs from 'dayjs';
 
 @Injectable()
@@ -12,7 +16,12 @@ export class SystemsService {
   constructor(
     @InjectModel('ACCESS_MODEL')
     private readonly accessModel: Model<AccessDocument>,
-    @InjectModel('ROLE_MODEL') private readonly roleModel: Model<RoleDocument>,
+
+    @InjectModel('ROLE_MODEL')
+    private readonly roleModel: Model<RoleDocument>,
+
+    @InjectModel('ADMINISTRATOR_MODEL')
+    private readonly adminModel: Model<AdministratorDocument>,
   ) {}
 
   /**
@@ -27,10 +36,7 @@ export class SystemsService {
       await this.accessModel.findByIdAndUpdate(authId, { ...fields });
     } else {
       // -- 新增
-      await new this.accessModel({
-        parentId,
-        ...fields,
-      }).save();
+      await new this.accessModel({ parentId, ...fields }).save();
     }
     return {};
   }
@@ -78,15 +84,26 @@ export class SystemsService {
    * 新增或编辑角色
    * @param dto
    */
-  async roleAddOrUpdate(dto: RoleAddOrUpdateDto) {
-    const { id, ...fileds } = dto;
-    if (id) {
-      await this.roleModel.findByIdAndUpdate(id, {
+  async roleAddOrUpdate(dto: RoleAddOrUpdateDto, userId: string) {
+    // -- 查询操作人信息
+    const dbAdmin = await this.adminModel.findById<AdministratorDocument>(
+      userId,
+    );
+    const { roleId, ...fileds } = dto;
+    if (roleId) {
+      // -- 编辑角色
+      await this.roleModel.findByIdAndUpdate(roleId, {
         ...fileds,
+        updateBy: dbAdmin.nickname,
         updateDate: dayjs().format('YYYY-MM-DD HH:mm:ss'),
       });
     } else {
-      await new this.roleModel({ ...dto }).save();
+      // -- 新增角色
+      await new this.roleModel({
+        ...dto,
+        createBy: dbAdmin.nickname,
+        createDate: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+      }).save();
     }
     return {};
   }
@@ -96,7 +113,7 @@ export class SystemsService {
    */
   async roleList(): Promise<BaseResponse> {
     const results = await this.roleModel.aggregate([
-      { $match: {} },
+      { $match: { state: 1 } },
       { $addFields: { id: '$_id' } },
       { $project: { _id: 0 } },
     ]);
@@ -109,7 +126,7 @@ export class SystemsService {
    * @returns
    */
   async roleRemove(roleId: string): Promise<BaseResponse> {
-    await this.roleModel.findByIdAndDelete(roleId);
+    await this.roleModel.findByIdAndUpdate(roleId, { state: 0 });
     return {};
   }
 }

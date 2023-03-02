@@ -2,7 +2,7 @@
  * @Author: Lee
  * @Date: 2023-02-26 00:42:41
  * @LastEditors: Lee
- * @LastEditTime: 2023-02-27 19:53:30
+ * @LastEditTime: 2023-03-02 17:07:16
  * @Description:
  */
 import { HttpStatus, Injectable } from '@nestjs/common';
@@ -57,6 +57,7 @@ export class AdministratorsService {
     });
     return {};
   }
+
   /**
    * 修改密码
    * @param dto
@@ -90,7 +91,7 @@ export class AdministratorsService {
   async list(dto: AdminListDto): Promise<BaseResponse> {
     const { state } = dto;
     const results = await this.adminModel.aggregate([
-      { $match: state ? { state } : {} },
+      { $match: state === undefined ? {} : { state: +state } },
       { $addFields: { id: '$_id' } },
       { $project: { _id: 0, salt: 0, password: 0 } },
     ]);
