@@ -2,7 +2,7 @@
  * @Author: Lee
  * @Date: 2023-02-27 14:02:16
  * @LastEditors: Lee
- * @LastEditTime: 2023-03-02 17:28:02
+ * @LastEditTime: 2023-03-24 13:48:00
  * @Description:
  */
 import { Injectable } from '@nestjs/common';
@@ -40,7 +40,7 @@ export class AddressService {
         { isDefault: 0 },
       );
     }
-    
+
     // 2. 正常处理添加编辑理逻辑
     if (id) {
       await this.addressModel.findByIdAndUpdate(id, {

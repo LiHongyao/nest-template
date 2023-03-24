@@ -2,7 +2,7 @@
  * @Author: Lee
  * @Date: 2023-02-27 10:11:10
  * @LastEditors: Lee
- * @LastEditTime: 2023-02-27 19:54:57
+ * @LastEditTime: 2023-03-24 13:49:44
  * @Description:
  */
 import { Injectable } from '@nestjs/common';
@@ -28,10 +28,10 @@ export class FeedbackService {
    */
   async add(dto: FeedbackAddDto, userId: string): Promise<BaseResponse> {
     const dbUser = await this.userModel.findById<UserDocument>(userId);
-    const { nickname, phone } = dbUser;
+    const { nickName, phone } = dbUser;
     await new this.feedbackModel({
       userId,
-      nickname,
+      nickName,
       phone,
       content: dto.content,
       createDate: dayjs().format('YYYY-MM-DD HH:mm:ss'),

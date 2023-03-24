@@ -2,7 +2,7 @@
  * @Author: Lee
  * @Date: 2023-02-19 18:33:24
  * @LastEditors: Lee
- * @LastEditTime: 2023-03-02 17:37:17
+ * @LastEditTime: 2023-03-24 13:48:57
  * @Description:
  */
 
@@ -18,7 +18,7 @@ export class User {
   createDate: string;
 
   @Prop({ default: '' })
-  nickname: string;
+  nickName: string;
 
   @Prop({ default: '' })
   avatarUrl: string;

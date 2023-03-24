@@ -94,14 +94,14 @@ export class SystemsService {
       // -- 编辑角色
       await this.roleModel.findByIdAndUpdate(roleId, {
         ...fileds,
-        updateBy: dbAdmin.nickname,
+        updateBy: dbAdmin.nickName,
         updateDate: dayjs().format('YYYY-MM-DD HH:mm:ss'),
       });
     } else {
       // -- 新增角色
       await new this.roleModel({
         ...dto,
-        createBy: dbAdmin.nickname,
+        createBy: dbAdmin.nickName,
         createDate: dayjs().format('YYYY-MM-DD HH:mm:ss'),
       }).save();
     }

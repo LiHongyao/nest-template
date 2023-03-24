@@ -2,7 +2,7 @@
  * @Author: Lee
  * @Date: 2023-02-19 17:08:54
  * @LastEditors: Lee
- * @LastEditTime: 2023-03-02 17:10:32
+ * @LastEditTime: 2023-03-24 11:09:40
  * @Description:
  */
 import { HttpService } from '@nestjs/axios';
@@ -118,7 +118,7 @@ export class AuthService {
         const data = {
           token,
           access,
-          user: { nickname: dbUser.nickname, avatar: dbUser.avatar },
+          user: { nickName: dbUser.nickName, avatar: dbUser.avatar },
         };
         return { data };
       }

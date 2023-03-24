@@ -2,21 +2,32 @@
  * @Author: Lee
  * @Date: 2023-02-19 14:32:52
  * @LastEditors: Lee
- * @LastEditTime: 2023-03-02 17:39:25
+ * @LastEditTime: 2023-03-24 13:44:57
  * @Description:
  */
 
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { lastValueFrom, map } from 'rxjs';
 import { BaseResponse } from 'src/common/dto/res.dto';
 import { UserDocument } from 'src/database/mongose/schemas';
-import { UserListDto } from './dto/req.dto';
+import { InjectRedis, RedisType } from 'src/database/redis';
+import { UserBindPhoneDto, UserEditDto, UserListDto } from './dto/req.dto';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectModel('USER_MODEL') private readonly userModel: Model<UserDocument>,
+    @InjectModel('USER_MODEL')
+    private readonly userModel: Model<UserDocument>,
+
+    @InjectRedis()
+    private readonly redis: RedisType,
+
+    private readonly configService: ConfigService,
+    private readonly httpService: HttpService,
   ) {}
 
   /**
@@ -34,9 +45,69 @@ export class UsersService {
   }
 
   /**
+   * 编辑用户信息
+   * @param userId
+   * @param dto
+   * @returns
+   */
+  async edit(userId: string, dto: UserEditDto): Promise<BaseResponse> {
+    await this.userModel.findByIdAndUpdate(userId, { ...dto });
+    return {};
+  }
+
+  /**
+   * 绑定手机号
+   * @param userId
+   * @param dto
+   * @returns
+   */
+  async bindPhone(
+    userId: string,
+    dto: UserBindPhoneDto,
+  ): Promise<BaseResponse> {
+    // 1. 处理ACCESS_TOKEN
+    // -- 从redis中读取ACCESS_TOKEN
+    let accessToken = await this.redis.get('MP_ACCESS_TOKEN');
+    // -- 判断ACCESS_TOKEN是否存在
+    if (!accessToken) {
+      // → 调用微信API，解析：ACCESS_TOKEN
+      const params = {
+        appid: this.configService.get('mp.appID'),
+        secret: this.configService.get('mp.appsecret'),
+        grant_type: 'client_credential',
+      };
+      const uri = 'https://api.weixin.qq.com/cgi-bin/token';
+      const resp = await lastValueFrom(
+        this.httpService.get(uri, { params }).pipe(map((resp) => resp.data)),
+      );
+      const { access_token, expires_in, errmsg } = resp;
+      if (errmsg) {
+        throw new HttpException(errmsg, HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+      // → 将ACCESS_TOKEN存入redis
+      await this.redis.set('MP_ACCESS_TOKEN', access_token, 'EX', expires_in);
+      accessToken = access_token;
+    }
+    // 2. 获取手机号
+    const uri = `https://api.weixin.qq.com/wxa/business/getuserphonenumber?access_token=${accessToken}`;
+    const resp = await lastValueFrom(
+      this.httpService
+        .post(uri, { code: dto.code })
+        .pipe(map((resp) => resp.data)),
+    );
+    const { errcode, errmsg, phone_info } = resp;
+    if (errcode) {
+      throw new HttpException(errmsg, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    const phone = phone_info.phoneNumber;
+    // 3. 更新用户信息
+    await this.userModel.findByIdAndUpdate(userId, { phone });
+    return {};
+  }
+
+  /**
    * 管理端·小程序用户列表
    */
-
   async list(dto: UserListDto): Promise<BaseResponse> {
     // 1. 解构参数
     const { pageSize = 10, current = 1, phone = '' } = dto;

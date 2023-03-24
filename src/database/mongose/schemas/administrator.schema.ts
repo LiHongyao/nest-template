@@ -21,7 +21,7 @@ export class Administrator {
 
   // -- 昵称
   @Prop()
-  nickname: string;
+  nickName: string;
 
   // -- 头像
   @Prop()

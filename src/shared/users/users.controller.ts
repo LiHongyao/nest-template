@@ -2,14 +2,14 @@
  * @Author: Lee
  * @Date: 2023-02-19 14:32:29
  * @LastEditors: Lee
- * @LastEditTime: 2023-03-02 17:38:24
+ * @LastEditTime: 2023-03-24 13:45:41
  * @Description:
  */
-import { Body, Controller, Get, Post, Req } from '@nestjs/common';
+import { Body, Controller, Get, Post, Put, Req } from '@nestjs/common';
 import { ApiHeader, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Public } from 'src/core/decorators/public.decorator';
 import { JWTPayloadProps } from '../auth/jwt.strategy';
-import { UserListDto } from './dto/req.dto';
+import { UserBindPhoneDto, UserEditDto, UserListDto } from './dto/req.dto';
 import { UsersService } from './users.service';
 
 @ApiTags('用户相关')
@@ -26,6 +26,34 @@ export class UsersController {
   @Get('info')
   async info(@Req() req: Request & { user: JWTPayloadProps }) {
     return await this.usersService.info(req.user.sub);
+  }
+
+  @ApiOperation({ summary: '小程序：编辑用户信息' })
+  @ApiHeader({
+    name: 'Authorization',
+    required: true,
+    description: '登录Token',
+  })
+  @Put('edit')
+  async edit(
+    @Req() req: Request & { user: JWTPayloadProps },
+    @Body() dto: UserEditDto,
+  ) {
+    return this.usersService.edit(req.user.sub, dto);
+  }
+
+  @ApiOperation({ summary: '小程序：绑定手机号' })
+  @ApiHeader({
+    name: 'Authorization',
+    required: true,
+    description: '登录Token',
+  })
+  @Post('bindPhone')
+  async bindPhone(
+    @Body() dto: UserBindPhoneDto,
+    @Req() req: Request & { user: JWTPayloadProps },
+  ) {
+    return await this.usersService.bindPhone(req.user.sub, dto);
   }
 
   @Public()

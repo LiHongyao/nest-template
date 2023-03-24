@@ -22,7 +22,7 @@ export class AdminAddOrUpdateDto {
 
   @ApiProperty({ description: '用户昵称' })
   @IsNotEmpty({ message: '用户昵称不能为空' })
-  nickname: string;
+  nickName: string;
 
   @ApiProperty({ description: '用户头像' })
   @IsNotEmpty({ message: '用户头像不能为空' })

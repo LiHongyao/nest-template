@@ -2,7 +2,7 @@
  * @Author: Lee
  * @Date: 2023-02-27 10:14:36
  * @LastEditors: Lee
- * @LastEditTime: 2023-03-02 17:35:34
+ * @LastEditTime: 2023-03-24 13:49:34
  * @Description:
  */
 import { Document } from 'mongoose';
@@ -20,7 +20,7 @@ export class Feedback {
 
   // -- 用户昵称
   @Prop({ default: '' })
-  nickname: string;
+  nickName: string;
 
   // -- 联系方式
   @Prop({ default: '' })
