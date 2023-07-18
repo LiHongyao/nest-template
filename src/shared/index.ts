@@ -2,7 +2,7 @@
  * @Author: Lee
  * @Date: 2023-02-26 00:07:50
  * @LastEditors: Lee
- * @LastEditTime: 2023-02-27 19:36:42
+ * @LastEditTime: 2023-03-25 11:18:16
  * @Description:
  */
 
@@ -18,6 +18,8 @@ export * from './systems/systems.module';
 export * from './feedback/feedback.module';
 export * from './configs/configs.module';
 export * from './address/address.module';
+export * from './payment/payment.module';
+export * from './player/player.module';
 
 /**********************
  ** 业务功能用模块

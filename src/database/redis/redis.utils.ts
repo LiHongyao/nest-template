@@ -2,12 +2,13 @@
  * @Author: Lee
  * @Date: 2023-01-10 15:59:43
  * @LastEditors: Lee
- * @LastEditTime: 2023-02-23 20:01:02
+ * @LastEditTime: 2023-03-25 09:18:53
  * @Description:
  */
 
-import { RedisModuleOptions } from './redis.interfaces';
+
 import { Redis } from 'ioredis';
+import { RedisModuleOptions } from './redis.interfaces';
 import { REDIS_MODULE_CONNECTION, REDIS_MODULE_CONNECTION_TOKEN, REDIS_MODULE_OPTIONS_TOKEN } from './redis.constants';
 
 export function getRedisOptionsToken(connection?: string): string {

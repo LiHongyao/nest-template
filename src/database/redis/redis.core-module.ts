@@ -1,3 +1,10 @@
+/*
+ * @Author: Lee
+ * @Date: 2023-03-23 18:51:54
+ * @LastEditors: Lee
+ * @LastEditTime: 2023-03-25 09:03:17
+ * @Description: 
+ */
 import { DynamicModule, Module, Global, Provider } from '@nestjs/common';
 import { RedisModuleAsyncOptions, RedisModuleOptions, RedisModuleOptionsFactory } from './redis.interfaces';
 import { createRedisConnection, getRedisOptionsToken, getRedisConnectionToken } from './redis.utils';
